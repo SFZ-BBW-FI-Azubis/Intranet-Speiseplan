@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "speiseplan-client-side-solution",
+    "id": "218b4e64-347a-4cca-a8de-c19a104d5017",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.19.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Speiseplan description"
+      },
+      "longDescription": {
+        "default": "Speiseplan description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "speiseplan Feature",
+        "description": "The feature that activates elements of the speiseplan solution.",
+        "id": "ae7f3ad3-143b-48ba-80cf-95d03ffa37f5",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/speiseplan.sppkg"
+  }
+}
