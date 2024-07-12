@@ -15,65 +15,103 @@ export const Speiseplan: React.FunctionComponent<ISpeiseplanProps> = ({
   description,
   context,
 }: ISpeiseplanProps) => {
-  const [lists, setLists] = React.useState<{ [key: string]: Array<any> }>({});
-  const [loading, setLoading] = React.useState(true);
+  const [lists, setLists] = React.useState<{ [key: string]: Array<any> }>({
+    list0: [],
+    list1: [],
+    list2: [],
+    list3: [],
+    list4: [],
+  });
+  const [fieldNames, setFieldNames] = React.useState<{ [key: string]: string }>(
+    {}
+  );
   const sp = spfi("https://sfzbbw.sharepoint.com").using(SPFx(context));
 
-  const fields = ["Datum", "Gericht 1", "Gericht 2", "Suppe", "Salat"];
+  const fetchListData = async (fieldName: string, listKey: string) => {
+    try {
+      const field = await sp.web.lists
+        .getByTitle("Speiseplan")
+        .fields.getByTitle(fieldName)();
+      const items = await sp.web.lists
+        .getByTitle("Speiseplan")
+        .items.select(field.EntityPropertyName)
+        .top(10)
+        .orderBy("Datum", false)();
+
+      if (listKey === "list0") {
+        items.forEach((item) => {
+          item[field.EntityPropertyName] = item[field.EntityPropertyName].slice(
+            5,
+            -10
+          );
+        });
+      }
+
+      setLists((prevLists) => ({ ...prevLists, [listKey]: items }));
+      setFieldNames((prevFieldNames) => ({
+        ...prevFieldNames,
+        [listKey]: field.EntityPropertyName,
+      }));
+    } catch (error) {
+      console.error(`Error fetching ${fieldName} list items`, error);
+    }
+  };
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedLists: { [key: string]: Array<any> } = {};
-        for (const field of fields) {
-          const actualName = await sp.web.lists.getByTitle("Speiseplan").fields.getByTitle(field)();
-          const list = await sp.web.lists
-            .getByTitle("Speiseplan")
-            .items.select(actualName.EntityPropertyName)
-            .top(50)
-            .orderBy("Datum", false)();
-          fetchedLists[actualName.EntityPropertyName] = list;
-        }
-        setLists(fetchedLists);
-      } catch (error) {
-        console.error("Error fetching Speiseplan list items", error);
-      } finally {
-        setLoading(false);
-      }
+    const listFields = ["Datum", "Gericht 1", "Gericht 2", "Suppe", "Salat"];
+    const fetchAllLists = async () => {
+      await Promise.all(
+        listFields.map((field, index) => fetchListData(field, `list${index}`))
+      );
     };
-
-    fetchData();
+    fetchAllLists();
   }, [context]);
 
-  const renderList = (field: string) => {
-    const fieldName = Object.keys(lists).filter(function (name) {
-      return name.indexOf(field) !== -1;
-    })[0];
-    if (!fieldName || lists[fieldName].length === 0) {
-      return <div>No Items found</div>;
-    }
-
-    return (
+  const renderList = (listKey: string) => {
+    const list = lists[listKey];
+    const fieldName = fieldNames[listKey];
+    return list.length > 0 ? (
       <ul>
-        {lists[fieldName].map(item => (
+        {list.map((item) => (
           <li key={item.Id}>{item[fieldName]}</li>
         ))}
       </ul>
+    ) : (
+      <div>No Items found</div>
     );
   };
 
   return (
-    <section className={`${styles.speiseplan} ${hasTeamsContext ? styles.teams : ""}`}>
-      <div className={styles.welcome}>
-        <div>
-          <strong>3 Speiseplan</strong>
+    <section
+      className={`${styles.speiseplan} ${hasTeamsContext ? styles.teams : ""}`}
+    >
+      <div>
+        <h1>
+          <strong>Speiseplan</strong>
+        </h1>
+        <div className={styles.listHolder}>
+          <div className={styles.listDate}>
+            <h1>Datum</h1>
+            <div>{renderList("list0")}</div>
+          </div>
+          <div className={styles.listMeal1}>
+            <h1>Speise 1</h1>
+            <div>{renderList("list1")}</div>
+          </div>
+          <div className={styles.listMeal2}>
+            <h1>Speise 2</h1>
+            <div>{renderList("list2")}</div>
+          </div>
+          <div className={styles.listSoup}>
+            <h1>Suppe</h1>
+            <div>{renderList("list3")}</div>
+          </div>
+          <div className={styles.listSalad}>
+            <h1>Salat</h1>
+            <div>{renderList("list4")}</div>
+          </div>
         </div>
-        {loading ? <div>Loading...</div> : renderList("Datum")}
       </div>
-      <div>{loading ? <div>Loading...</div> : renderList("Gericht 1")}</div>
-      <div>{loading ? <div>Loading...</div> : renderList("Gericht 2")}</div>
-      <div>{loading ? <div>Loading...</div> : renderList("Suppe")}</div>
-      <div>{loading ? <div>Loading...</div> : renderList("Salat")}</div>
     </section>
   );
 };

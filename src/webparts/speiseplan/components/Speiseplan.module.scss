@@ -1,7 +1,7 @@
-@import '~@fluentui/react/dist/sass/References.scss';
+@import "~@fluentui/react/dist/sass/References.scss";
 
 .speiseplan {
-  overflow: hidden;
+  overflow: show;
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
@@ -10,25 +10,52 @@
   }
 }
 
-.welcome {
-  text-align: center;
-}
-
-.welcomeImage {
-  width: 100%;
-  max-width: 420px;
-}
-
 .links {
   a {
     text-decoration: none;
     color: "[theme:link, default:#03787c]";
-    color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
+    color: var(
+      --link
+    ); // note: CSS Custom Properties support is limited to modern browsers only
 
     &:hover {
       text-decoration: underline;
       color: "[theme:linkHovered, default: #014446]";
-      color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+      color: var(
+        --linkHovered
+      ); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+
+.listHolder {
+  display: flex !important;
+  width: 100%;
+
+  .listDate,
+  .listMeal1,
+  .listMeal2,
+  .listSoup,
+  .listSalad {
+    display: block;
+    width: 24%;
+    margin: 0px;
+    padding: 0px !important;
+    h1{
+      text-decoration: underline;
+      align-self: flex-end;
+    }
+    ul{
+      margin: 0px;
+      list-style-type: none;
+      display: block;
+      li{
+        border-bottom: 3px solid black;
+        height: 12vh !important;
+        margin: 0px;
+        padding-bottom: 2px;
+        list-style-type: none;
+      }
     }
   }
 }
